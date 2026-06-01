@@ -38,4 +38,8 @@ export class LeaderboardComponent implements OnInit {
   isCurrentUser(nombre: string): boolean {
     return nombre === this.currentUser()?.nombre_usuario;
   }
+
+  displayName(nombre: string): string {
+    return nombre.split('@')[0];
+  }
 }

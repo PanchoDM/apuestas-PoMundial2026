@@ -18,7 +18,7 @@
         <div class="my-pos-data">
           <span class="my-pos-rank">{{ getMedalEmoji(myEntry()!.posicion) }}</span>
           <div class="my-pos-info">
-            <strong>{{ myEntry()!.nombre_usuario }}</strong>
+            <strong>{{ displayName(myEntry()!.nombre_usuario) }}</strong>
             <span>Puesto #{{ myEntry()!.posicion }} · {{ myEntry()!.puntos_totales }} pts · {{ myEntry()!.aciertos_exactos }} exactos</span>
           </div>
         </div>
@@ -56,7 +56,7 @@
                   </span>
                 </td>
                 <td class="col-user">
-                  <span class="username">{{ entry.nombre_usuario }}</span>
+                  <span class="username">{{ displayName(entry.nombre_usuario) }}</span>
                   @if (isCurrentUser(entry.nombre_usuario)) {
                     <span class="you-tag">Tú</span>
                   }
