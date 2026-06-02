@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -13,11 +13,12 @@ import { AuthService } from '../../services/auth.service';
 export class NavbarComponent {
   user      = computed(() => this.auth.currentUser());
   isAdmin   = computed(() => this.auth.isAdmin());
-  menuOpen  = signal(false);
+  isMenuOpen = false;
 
   constructor(public auth: AuthService, private router: Router) {
-    this.router.events.subscribe(() => this.menuOpen.set(false));
+    this.router.events.subscribe(() => { this.isMenuOpen = false; });
   }
 
-  toggleMenu() { this.menuOpen.update(v => !v); }
+  toggleMenu() { this.isMenuOpen = !this.isMenuOpen; }
+  closeMenu()  { this.isMenuOpen = false; }
 }

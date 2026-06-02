@@ -5,23 +5,21 @@
   </div>
 
   @if (user()) {
-    <button class="navbar__hamburger"
-            [class.is-open]="menuOpen()"
-            (click)="toggleMenu()"
-            aria-label="Abrir menú">
-      <span></span>
-      <span></span>
-      <span></span>
+    <!-- Botón hamburguesa: solo visible en móvil via CSS -->
+    <button class="navbar__hamburger" (click)="toggleMenu()" aria-label="Abrir menú">
+      ☰
     </button>
 
-    <div class="navbar__collapse" [class.is-open]="menuOpen()">
+    <!-- Contenedor de links y usuario -->
+    <div class="navbar__menu" [class.active]="isMenuOpen">
       <div class="navbar__links">
-        <a routerLink="/dashboard"   routerLinkActive="active">Dashboard</a>
-        <a routerLink="/leaderboard" routerLinkActive="active">Posiciones</a>
+        <a routerLink="/dashboard"   routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
+        <a routerLink="/leaderboard" routerLinkActive="active" (click)="closeMenu()">Posiciones</a>
         @if (isAdmin()) {
-          <a routerLink="/admin" routerLinkActive="active" class="admin-link">⚙ Admin</a>
+          <a routerLink="/admin" routerLinkActive="active" class="admin-link" (click)="closeMenu()">⚙ Admin</a>
         }
       </div>
+
       <div class="navbar__user">
         @if (!isAdmin()) {
           <span class="points-badge">⚽ {{ user()!.puntos_totales }} pts</span>
