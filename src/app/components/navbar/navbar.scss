@@ -3,7 +3,9 @@ $nav-bg:       linear-gradient(90deg, #0a0a0a 0%, #1a1a2e 60%, #16213e 100%);
 $nav-bg-solid: #1a1a2e;
 $accent:       #e63946;
 
-// ── Estilos Principales ───────────────────────────────────────────────────
+// ==========================================================================
+// 1. BASE / DESKTOP (Pantallas grandes)
+// ==========================================================================
 .navbar {
   display: flex;
   align-items: center;
@@ -41,12 +43,11 @@ $accent:       #e63946;
     white-space: nowrap;
   }
 
-  &__year { 
-    color: $accent; 
-  }
+  &__year { color: $accent; }
 
+  /* Oculto en desktop */
   &__hamburger {
-    display: none; // Oculto en desktop
+    display: none; 
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #fff;
@@ -57,9 +58,7 @@ $accent:       #e63946;
     cursor: pointer;
     transition: background 0.2s;
 
-    &:hover { 
-      background: rgba(255, 255, 255, 0.1); 
-    }
+    &:hover { background: rgba(255, 255, 255, 0.1); }
   }
 
   &__menu {
@@ -90,9 +89,7 @@ $accent:       #e63946;
       }
     }
 
-    .admin-link { 
-      color: #ffd166; 
-    }
+    .admin-link { color: #ffd166; }
   }
 
   &__user {
@@ -135,33 +132,32 @@ $accent:       #e63946;
     flex-shrink: 0;
     transition: all 0.2s;
 
-    &:hover { 
-      background: $accent; 
-      color: #fff; 
-    }
+    &:hover { background: $accent; color: #fff; }
   }
+}
 
-  // ── Mobile (≤ 768px) Anidado ─────────────────────────────────────────────
-  @media (max-width: 768px) {
-    flex-wrap: nowrap;
-    height: 56px;
+// ==========================================================================
+// 2. MOBILE (≤ 768px) - Bloque completamente separado
+// ==========================================================================
+@media (max-width: 768px) {
+  .navbar {
     padding: 0 1rem;
-    max-width: 100vw;
-    position: relative; // ancla el dropdown absoluto
-    overflow: visible;  // permite que el dropdown salga por abajo
+    height: 56px;
+    position: relative; // Fundamental para anclar el dropdown
 
+    // Muestra el botón hamburguesa
     &__hamburger {
       display: block;
     }
 
+    // Oculta el menú por defecto y lo prepara para mostrarse en columna
     &__menu {
-      display: none; // Menú oculto por defecto en móvil
+      display: none; 
 
       &.active {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 0;
         
         position: absolute;
         top: 100%;
@@ -173,39 +169,42 @@ $accent:       #e63946;
         background-color: $nav-bg-solid;
         border-bottom: 2px solid $accent;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-        padding: 0.75rem 1rem 1.25rem;
+        padding: 1rem;
+        gap: 0;
       }
     }
 
+    // Adapta los enlaces para que ocupen todo el ancho
     &__links {
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.5rem;
       width: 100%;
 
       a {
-        padding: 0.7rem 0.8rem;
-        font-size: 0.95rem;
+        padding: 0.8rem;
+        font-size: 1rem;
         border-radius: 6px;
         white-space: normal;
+        display: block; // Fuerza a que sea un bloque clickeable completo
       }
     }
 
+    // Apila la sección de usuario y le da un separador
     &__user {
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.8rem;
       width: 100%;
-      padding-top: 0.75rem;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
+      justify-content: flex-start;
     }
 
     .username {
       word-break: break-all;
       white-space: normal;
       overflow: visible;
-      text-overflow: unset;
       max-width: 100%;
-      font-size: 0.82rem;
     }
   }
 }
