@@ -34,16 +34,49 @@ export class DashboardComponent implements OnInit {
 
   user = this.auth.currentUser;
 
-  // Título dinámico: prioriza ronda (knockout) > grupo (fase de grupos)
-  faseActual = computed(() => {
+  private readonly GRUPOS_ORDER = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  private readonly RONDA_ORDER  = ['16avos','octavos','cuartos','semis','tercero','final'];
+  private readonly RONDA_LABELS: Record<string, string> = {
+    '16avos':  'DIECISEISAVOS DE FINAL',
+    'octavos': 'OCTAVOS DE FINAL',
+    'cuartos': 'CUARTOS DE FINAL',
+    'semis':   'SEMIFINAL',
+    'tercero': 'TERCER LUGAR',
+    'final':   'FINAL',
+  };
+
+  partidosAgrupados = computed(() => {
     const list = this.partidos();
-    if (!list.length) return 'PARTIDOS · FASE DE GRUPOS';
-    const activos = list.filter(p => p.estado !== 'finalizado');
-    if (!activos.length) return 'TORNEO FINALIZADO';
-    const p = activos[0];
-    if (p?.ronda)  return `PARTIDOS · ${p.ronda.toUpperCase()}`;
-    if (p?.grupo)  return `PARTIDOS · GRUPO ${p.grupo}`;
-    return 'PARTIDOS · FASE DE GRUPOS';
+    const grupoMap = new Map<string, Partido[]>();
+    const rondaMap = new Map<string, Partido[]>();
+
+    for (const p of list) {
+      if (p.ronda) {
+        if (!rondaMap.has(p.ronda)) rondaMap.set(p.ronda, []);
+        rondaMap.get(p.ronda)!.push(p);
+      } else {
+        const key = p.grupo ?? '__sin_grupo__';
+        if (!grupoMap.has(key)) grupoMap.set(key, []);
+        grupoMap.get(key)!.push(p);
+      }
+    }
+
+    const secciones: { titulo: string; partidos: Partido[] }[] = [];
+
+    for (const g of this.GRUPOS_ORDER) {
+      if (grupoMap.has(g)) secciones.push({ titulo: `GRUPO ${g}`, partidos: grupoMap.get(g)! });
+    }
+    if (grupoMap.has('__sin_grupo__')) {
+      secciones.push({ titulo: 'FASE DE GRUPOS', partidos: grupoMap.get('__sin_grupo__')! });
+    }
+    for (const r of this.RONDA_ORDER) {
+      if (rondaMap.has(r)) secciones.push({ titulo: this.RONDA_LABELS[r], partidos: rondaMap.get(r)! });
+    }
+    for (const [r, ps] of rondaMap.entries()) {
+      if (!this.RONDA_ORDER.includes(r)) secciones.push({ titulo: r.toUpperCase(), partidos: ps });
+    }
+
+    return secciones;
   });
 
   ngOnInit() {

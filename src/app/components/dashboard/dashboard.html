@@ -24,69 +24,72 @@
     </div>
   </section>
 
-  <!-- Partidos -->
-  <section class="dashboard__matches">
-    <h2 class="section-title">{{ faseActual() }}</h2>
-
-    @if (loading()) {
+  <!-- Partidos agrupados por fase / grupo -->
+  @if (loading()) {
+    <section class="dashboard__matches">
       <div class="loading-grid">
         @for (i of [1,2,3,4,5,6]; track i) {
           <div class="card-skeleton"></div>
         }
       </div>
-    } @else {
-      <div class="matches-grid">
-        @for (partido of partidos(); track partido.id) {
-          <div class="match-card" [class.locked]="!partido.apuestas_abiertas">
-            <div class="match-card__header">
-              <span class="match-date">{{ partido.fecha_partido | date:'d MMM · HH:mm':'UTC' }}</span>
-              <span class="badge" [ngClass]="getEstadoBadgeClass(partido.estado)">
-                {{ partido.estado === 'pendiente' ? 'Próximo' : partido.estado === 'medio_tiempo' ? '⚡ En vivo MT' : '✓ Finalizado' }}
-              </span>
-            </div>
-
-            <div class="match-teams">
-              <div class="team-block">
-                <span class="team-flag">{{ partido.equipo_local | flag }}</span>
-                <span class="team-name">{{ partido.equipo_local }}</span>
+    </section>
+  } @else {
+    @for (seccion of partidosAgrupados(); track seccion.titulo) {
+      <section class="dashboard__matches">
+        <h2 class="section-title">{{ seccion.titulo }}</h2>
+        <div class="matches-grid">
+          @for (partido of seccion.partidos; track partido.id) {
+            <div class="match-card" [class.locked]="!partido.apuestas_abiertas">
+              <div class="match-card__header">
+                <span class="match-date">{{ partido.fecha_partido | date:'d MMM · HH:mm':'UTC' }}</span>
+                <span class="badge" [ngClass]="getEstadoBadgeClass(partido.estado)">
+                  {{ partido.estado === 'pendiente' ? 'Próximo' : partido.estado === 'medio_tiempo' ? '⚡ En vivo MT' : '✓ Finalizado' }}
+                </span>
               </div>
-              @if (partido.goles_local_mt !== null) {
-                <span class="live-score">{{ partido.goles_local_mt }} – {{ partido.goles_visitante_mt }}</span>
+
+              <div class="match-teams">
+                <div class="team-block">
+                  <span class="team-flag">{{ partido.equipo_local | flag }}</span>
+                  <span class="team-name">{{ partido.equipo_local }}</span>
+                </div>
+                @if (partido.goles_local_mt !== null) {
+                  <span class="live-score">{{ partido.goles_local_mt }} – {{ partido.goles_visitante_mt }}</span>
+                } @else {
+                  <span class="vs-label">VS</span>
+                }
+                <div class="team-block team-block--right">
+                  <span class="team-flag">{{ partido.equipo_visitante | flag }}</span>
+                  <span class="team-name">{{ partido.equipo_visitante }}</span>
+                </div>
+              </div>
+
+              @if (getPrediccion(partido.id); as pred) {
+                <div class="match-card__prediction">
+                  <span class="pred-score">Mi apuesta: {{ pred.goles_local_esperados_mt }} – {{ pred.goles_visitante_esperados_mt }}</span>
+                  @if (pred.puntos_obtenidos !== null) {
+                    <span class="pts-badge" [ngClass]="getPuntosClass(pred.puntos_obtenidos)">
+                      {{ pred.puntos_obtenidos === 10 ? '⭐ Exacto!' : pred.puntos_obtenidos === 3 ? '✓ Tendencia' : '✗ Sin pts' }}
+                      · {{ pred.puntos_obtenidos }} pts
+                    </span>
+                  } @else {
+                    <span class="pred-pending">Esperando resultado...</span>
+                  }
+                </div>
               } @else {
-                <span class="vs-label">VS</span>
+                <div class="match-card__action">
+                  @if (partido.apuestas_abiertas && partido.estado !== 'finalizado') {
+                    <button class="btn-bet" (click)="openBet(partido)">Apostar Ahora</button>
+                  } @else {
+                    <span class="locked-msg">
+                      {{ partido.estado === 'finalizado' ? '✓ Partido finalizado' : '🔒 Apuestas cerradas' }}
+                    </span>
+                  }
+                </div>
               }
-              <div class="team-block team-block--right">
-                <span class="team-flag">{{ partido.equipo_visitante | flag }}</span>
-                <span class="team-name">{{ partido.equipo_visitante }}</span>
-              </div>
             </div>
-
-            @if (getPrediccion(partido.id); as pred) {
-              <div class="match-card__prediction">
-                <span class="pred-score">Mi apuesta: {{ pred.goles_local_esperados_mt }} – {{ pred.goles_visitante_esperados_mt }}</span>
-                @if (pred.puntos_obtenidos !== null) {
-                  <span class="pts-badge" [ngClass]="getPuntosClass(pred.puntos_obtenidos)">
-                    {{ pred.puntos_obtenidos === 10 ? '⭐ Exacto!' : pred.puntos_obtenidos === 3 ? '✓ Tendencia' : '✗ Sin pts' }}
-                    · {{ pred.puntos_obtenidos }} pts
-                  </span>
-                } @else {
-                  <span class="pred-pending">Esperando resultado...</span>
-                }
-              </div>
-            } @else {
-              <div class="match-card__action">
-                @if (partido.apuestas_abiertas && partido.estado !== 'finalizado') {
-                  <button class="btn-bet" (click)="openBet(partido)">Apostar Ahora</button>
-                } @else {
-                  <span class="locked-msg">
-                    {{ partido.estado === 'finalizado' ? '✓ Partido finalizado' : '🔒 Apuestas cerradas' }}
-                  </span>
-                }
-              </div>
-            }
-          </div>
-        }
-      </div>
+          }
+        </div>
+      </section>
     }
-  </section>
+  }
 </main>
