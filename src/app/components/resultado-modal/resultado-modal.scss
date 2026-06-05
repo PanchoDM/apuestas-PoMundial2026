@@ -133,8 +133,43 @@ form { padding: 0 1.5rem 1.5rem; }
 
 .rm-error { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #e63946; border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.8rem; margin-bottom: 0.8rem; }
 
+.rm-live-success {
+  background: rgba(76, 201, 240, 0.1);
+  border: 1px solid rgba(76, 201, 240, 0.3);
+  color: #4cc9f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  animation: fadeIn 0.2s ease;
+}
+
 .rm-actions {
-  display: flex; gap: 0.75rem; justify-content: flex-end;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.btn-live {
+  background: transparent;
+  border: 1px solid rgba(76, 201, 240, 0.45);
+  color: #4cc9f0;
+  padding: 0.65rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(76, 201, 240, 0.1);
+    border-color: #4cc9f0;
+  }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 .btn-cancel {

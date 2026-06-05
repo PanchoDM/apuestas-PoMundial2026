@@ -1,6 +1,131 @@
-.admin-page {
+// ── Layout dos columnas ────────────────────────────────────────────────────
+.admin-layout {
+  display: flex;
+  position: relative;
   min-height: calc(100vh - 64px);
   background: #0a0a0a;
+}
+
+// ── Sidebar ────────────────────────────────────────────────────────────────
+.admin-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #1a1a2e;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 80px;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  padding: 1rem 0 2rem;
+
+  // Scrollbar sutil
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.2rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-label {
+  color: #6c757d;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.sidebar-close {
+  display: none;  // visible solo en móvil
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.3rem;
+  transition: color 0.15s;
+  &:hover { color: #fff; }
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #adb5bd;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+
+  &:hover { background: rgba(255, 255, 255, 0.04); color: #fff; }
+
+  &.active {
+    color: #e63946;
+    background: rgba(230, 57, 70, 0.08);
+    border-left-color: #e63946;
+  }
+
+  &--group { font-weight: 700; }
+
+  &--sub {
+    padding-left: 2rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6c757d;
+    border-left-color: transparent;
+
+    &:hover { color: #adb5bd; }
+    &.active { color: #e63946; border-left-color: #e63946; }
+  }
+}
+
+.chevron {
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.2s;
+
+  &.rotated { transform: rotate(90deg); }
+}
+
+.sidebar-subgroup { padding-bottom: 0.25rem; }
+
+.sidebar-overlay {
+  display: none;  // solo activo en móvil
+}
+
+.btn-sidebar-toggle {
+  display: none;  // solo visible en móvil
+}
+
+.ronda-badge {
+  background: rgba(230, 57, 70, 0.15);
+  color: #e63946;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// ── Contenido principal ────────────────────────────────────────────────────
+.admin-page {
+  flex: 1;
+  min-width: 0;
   padding: 2rem 2rem 4rem;
 }
 
@@ -318,6 +443,70 @@
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+// ── Responsive sidebar (móvil ≤ 768px) ────────────────────────────────────
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  // Botón flotante para abrir el sidebar
+  .btn-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 800;
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(230, 57, 70, 0.5);
+    transition: transform 0.15s;
+
+    &:hover { transform: translateY(-2px); }
+  }
+
+  // Sidebar como off-canvas desde la izquierda
+  .admin-sidebar {
+    position: fixed !important;
+    top: 56px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 56px);
+    z-index: 900;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: none;
+
+    &.is-open {
+      transform: translateX(0);
+      box-shadow: 8px 0 40px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .sidebar-close { display: block; }
+
+  // Overlay oscuro
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: 56px;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 899;
+  }
+
+  .admin-page {
+    padding: 1rem 1rem 6rem; // espacio para el botón flotante
+  }
+}
 
 // ── Preview de partido nuevo ──────────────────────────────────────────────────
 .partido-preview {

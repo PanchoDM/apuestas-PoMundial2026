@@ -1,6 +1,7 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe } from '@angular/common';
+import { timer } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { PartidosService } from '../../services/partidos.service';
 import { PrediccionesService } from '../../services/predicciones.service';
@@ -33,9 +34,24 @@ export class DashboardComponent implements OnInit {
 
   user = this.auth.currentUser;
 
+  // Título dinámico: usa el campo `ronda` del primer partido activo si está disponible
+  faseActual = computed(() => {
+    const list = this.partidos();
+    if (!list.length) return 'PARTIDOS • FASE DE GRUPOS';
+    const activos = list.filter(p => p.estado !== 'finalizado');
+    if (!activos.length) return 'TORNEO FINALIZADO';
+    const ronda = activos[0]?.ronda;
+    return ronda ? `PARTIDOS • ${ronda.toUpperCase()}` : 'PARTIDOS • FASE DE GRUPOS';
+  });
+
   ngOnInit() {
     this.loadData();
     this.loadStreak();
+
+    // Short polling cada 30 s para actualizaciones de marcador en vivo
+    timer(30_000, 30_000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadData());
 
     this.notif.scoreUpdate$
       .pipe(takeUntilDestroyed(this.destroyRef))

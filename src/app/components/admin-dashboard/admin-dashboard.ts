@@ -8,6 +8,11 @@ import { CountryAutocompleteComponent } from '../country-autocomplete/country-au
 import { ResultadoModalComponent } from '../resultado-modal/resultado-modal';
 import { FlagPipe } from '../../pipes/flag.pipe';
 
+interface FaseItem  { key: string; label: string }
+interface FaseGroup { key: string; label: string; accordion: true;  subItems: FaseItem[] }
+interface FaseLink  { key: string; label: string; accordion?: false }
+type SidebarFase = FaseGroup | FaseLink;
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -27,19 +32,48 @@ export class AdminDashboardComponent implements OnInit {
   deleting          = signal<number | null>(null);
   togglingVis       = signal<number | null>(null);
   showAll           = signal(true);
-  formError         = '';
-  formSuccess       = '';
-  form: FormGroup;
 
-  // Partidos visibles según el filtro activo
+  // ── Sidebar ─────────────────────────────────────────────────────────────
+  sidebarOpen   = signal(false);
+  gruposOpen    = signal(true);
+  selectedRonda = signal<string | null>(null);
+
+  readonly fases: SidebarFase[] = [
+    {
+      key: 'grupos', label: 'Fase de Grupos', accordion: true,
+      subItems: [
+        { key: 'grupos_d1', label: 'Día 1' },
+        { key: 'grupos_d2', label: 'Día 2' },
+        { key: 'grupos_d3', label: 'Día 3' },
+        { key: 'grupos_d4', label: 'Día 4' },
+      ],
+    },
+    { key: '16avos',  label: 'Dieciseisavos de Final' },
+    { key: 'octavos', label: 'Octavos de Final' },
+    { key: 'cuartos', label: 'Cuartos de Final' },
+    { key: 'semis',   label: 'Semifinal' },
+    { key: 'tercero', label: 'Tercer Lugar' },
+    { key: 'final',   label: 'Final' },
+  ];
+
+  // Partidos filtrados por estado Y por ronda seleccionada
   filteredPartidos = computed(() => {
-    const list = this.partidos();
-    if (this.showAll()) return list;
-    // Oculta: finalizados Y los que tienen apuestas cerradas sin resultado (cerrados por el admin)
-    return list.filter(p => p.estado !== 'finalizado' && p.apuestas_abiertas);
+    let list = this.partidos();
+    if (!this.showAll()) {
+      list = list.filter(p => p.estado !== 'finalizado' && p.apuestas_abiertas);
+    }
+    const ronda = this.selectedRonda();
+    if (ronda) {
+      list = list.filter(p => p.ronda === ronda);
+    }
+    return list;
   });
 
   hiddenCount = computed(() => this.partidos().length - this.filteredPartidos().length);
+
+  formError   = '';
+  formSuccess = '';
+  form: FormGroup;
 
   constructor(private svc: PartidosService, private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -59,6 +93,17 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
+  // ── Sidebar ──────────────────────────────────────────────────────────────
+  toggleSidebar()         { this.sidebarOpen.update(v => !v); }
+  closeSidebar()          { this.sidebarOpen.set(false); }
+  toggleGrupos()          { this.gruposOpen.update(v => !v); }
+  selectRonda(key: string | null) {
+    this.selectedRonda.set(key);
+    this.sidebarOpen.set(false);    // cierra off-canvas en móvil
+  }
+  isFaseGroup(f: SidebarFase): f is FaseGroup { return (f as FaseGroup).accordion === true; }
+
+  // ── Partidos ─────────────────────────────────────────────────────────────
   toggle(id: number) {
     this.toggling.set(id);
     this.svc.toggleApuestas(id).subscribe({
@@ -72,9 +117,7 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  openResultado(partido: Partido) {
-    this.selectedPartido.set(partido);
-  }
+  openResultado(partido: Partido) { this.selectedPartido.set(partido); }
 
   onResultadoSaved() {
     this.selectedPartido.set(null);
@@ -83,7 +126,6 @@ export class AdminDashboardComponent implements OnInit {
 
   pedirConfirmacionEliminar(id: number) {
     this.confirmingDelete.set(id);
-    // Auto-cancelar tras 5 s si no confirma
     setTimeout(() => {
       if (this.confirmingDelete() === id) this.confirmingDelete.set(null);
     }, 5000);

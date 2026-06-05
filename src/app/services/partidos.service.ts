@@ -32,4 +32,8 @@ export class PartidosService {
   toggleVisibilidad(id: number) {
     return this.http.patch<{ id: string; visible_usuarios: boolean }>(`${this.url}/${id}/toggle-visibilidad`, {});
   }
+
+  marcadorEnVivo(id: number, data: { goles_local_mt: number; goles_visitante_mt: number }) {
+    return this.http.put<{ message: string; partido_id: number }>(`${this.url}/${id}/marcador-en-vivo`, data);
+  }
 }

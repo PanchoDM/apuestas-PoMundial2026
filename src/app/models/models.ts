@@ -21,6 +21,7 @@ export interface Partido {
   estado: 'pendiente' | 'medio_tiempo' | 'finalizado';
   apuestas_abiertas: boolean;
   visible_usuarios: boolean;
+  ronda?: string;
 }
 
 export interface Prediccion {

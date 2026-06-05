@@ -21,8 +21,10 @@ export class ResultadoModalComponent implements OnInit {
   private fb  = inject(FormBuilder);
 
   form!: FormGroup;
-  saving = false;
-  error  = '';
+  saving     = false;
+  savingLive = false;
+  error      = '';
+  liveSuccess = '';
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -37,6 +39,7 @@ export class ResultadoModalComponent implements OnInit {
     });
   }
 
+  // Finaliza el partido definitivamente y reparte puntos
   submit() {
     if (this.form.invalid) return;
     this.saving = true;
@@ -50,6 +53,30 @@ export class ResultadoModalComponent implements OnInit {
     }).subscribe({
       next: () => { this.saving = false; this.saved.emit(); },
       error: err => { this.saving = false; this.error = err.error?.message || 'Error al guardar'; },
+    });
+  }
+
+  // Actualiza solo los goles temporalmente, sin finalizar ni repartir puntos
+  submitLive() {
+    if (this.form.invalid) return;
+    this.savingLive  = true;
+    this.error       = '';
+    this.liveSuccess = '';
+    const { goles_local, goles_visitante } = this.form.value;
+
+    this.svc.marcadorEnVivo(this.partido.id, {
+      goles_local_mt:     +goles_local,
+      goles_visitante_mt: +goles_visitante,
+    }).subscribe({
+      next: () => {
+        this.savingLive  = false;
+        this.liveSuccess = '⚽ Marcador temporal actualizado correctamente';
+        setTimeout(() => this.liveSuccess = '', 3500);
+      },
+      error: err => {
+        this.savingLive = false;
+        this.error = err.error?.message || 'Error al actualizar marcador';
+      },
     });
   }
 }

@@ -32,18 +32,35 @@
         </div>
       </div>
 
+      <!-- Notificación de actualización en vivo -->
+      @if (liveSuccess) {
+        <div class="rm-live-success">{{ liveSuccess }}</div>
+      }
+
       <div class="rm-alert rm-alert--warning">
-        El partido quedará <strong>cerrado definitivamente</strong>. Se repartirán los puntos a todos los apostadores.
+        El botón amarillo cierra el partido <strong>definitivamente</strong> y reparte los puntos.
+        El botón azul solo guarda el marcador de forma temporal.
       </div>
 
       @if (error) { <div class="rm-error">{{ error }}</div> }
 
       <div class="rm-actions">
         <button type="button" class="btn-cancel" (click)="cancel.emit()">Cancelar</button>
-        <button type="submit" class="btn-save" [disabled]="saving || form.invalid">
-          {{ saving ? 'Guardando...' : 'Finalizar Partido y Repartir Puntos' }}
+
+        <!-- Botón de actualización temporal -->
+        <button type="button" class="btn-live"
+                [disabled]="savingLive || saving || form.invalid"
+                (click)="submitLive()">
+          {{ savingLive ? 'Actualizando...' : '⚡ Actualizar en Vivo' }}
+        </button>
+
+        <!-- Botón de finalización definitiva -->
+        <button type="submit" class="btn-save"
+                [disabled]="saving || savingLive || form.invalid">
+          {{ saving ? 'Guardando...' : '🏁 Finalizar y Repartir Puntos' }}
         </button>
       </div>
+
     </form>
   </div>
 </div>
