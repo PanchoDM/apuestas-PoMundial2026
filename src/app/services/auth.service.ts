@@ -7,8 +7,8 @@ import { AuthResponse, Usuario } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY = 'talmafm_token';
-  private readonly USER_KEY  = 'talmafm_user';
+  private readonly TOKEN_KEY = 'pollamundial2026_token';
+  private readonly USER_KEY  = 'pollamundial2026_user';
 
   currentUser = signal<Usuario | null>(this.loadUser());
 
