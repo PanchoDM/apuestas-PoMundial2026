@@ -107,6 +107,18 @@
   margin-bottom: 1.2rem;
 }
 
+.locked-msg {
+  text-align: center;
+  color: #adb5bd;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
 .pf-actions {
   display: flex;
   gap: 1rem;

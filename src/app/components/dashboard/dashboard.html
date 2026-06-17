@@ -52,6 +52,7 @@
       <button class="chip" [class.active]="filtroChip() === 'abiertas'"    (click)="setFiltro('abiertas')">🔥 Apuestas abiertas</button>
       <button class="chip chip-live" [class.active]="filtroChip() === 'en-vivo'" (click)="setFiltro('en-vivo')">⚡ En vivo</button>
       <button class="chip" [class.active]="filtroChip() === 'mis-apuestas'" (click)="setFiltro('mis-apuestas')">🎯 Mis apuestas</button>
+      <button class="chip" [class.active]="filtroChip() === 'mas-cercanos'" (click)="setFiltro('mas-cercanos')">⏱️ Más cercanos</button>
     </div>
   </section>
 
@@ -77,7 +78,7 @@
           @for (partido of seccion.partidos; track partido.id; let i = $index) {
             <div class="match-card anim-enter"
                  [style.animation-delay.ms]="i * 60"
-                 [class.locked]="!partido.apuestas_abiertas"
+                 [class.locked]="apuestasCerradas(partido)"
                  [class.is-live]="partido.estado === 'medio_tiempo'"
                  [class.goal-flash]="flashScore().has(partido.id)">
               <div class="match-card__header">
@@ -141,7 +142,7 @@
                 </div>
               } @else {
                 <div class="match-card__action">
-                  @if (partido.apuestas_abiertas && partido.estado !== 'finalizado') {
+                  @if (!apuestasCerradas(partido)) {
                     <button class="btn-bet" (click)="openBet(partido)">Apostar Ahora</button>
                   } @else {
                     <span class="locked-msg">

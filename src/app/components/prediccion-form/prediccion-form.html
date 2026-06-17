@@ -7,35 +7,42 @@
       <span class="team">{{ partido.equipo_visitante }}</span>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <div class="pf-scores">
-        <div class="score-input">
-          <label>{{ partido.equipo_local }}</label>
-          <input formControlName="goles_local" type="number" min="0" max="20" />
-        </div>
-        <div class="score-separator">–</div>
-        <div class="score-input">
-          <label>{{ partido.equipo_visitante }}</label>
-          <input formControlName="goles_visitante" type="number" min="0" max="20" />
-        </div>
-      </div>
-
-      <div class="pf-tendency">
-        Tendencia apostada: <strong>{{ tendenciaPreview }}</strong>
-      </div>
-
-      @if (error) { <div class="error-msg">{{ error }}</div> }
-
-      <div class="pf-warning">
-        ⚠ Las apuestas son definitivas y no se pueden cambiar
-      </div>
-
+    @if (cerrado()) {
+      <p class="locked-msg">🔒 Apuestas cerradas — ya pasaron 5 minutos desde el inicio del partido.</p>
       <div class="pf-actions">
-        <button type="button" class="btn-cancel" (click)="cancel.emit()">Cancelar</button>
-        <button type="submit" class="btn-primary" [disabled]="loading">
-          {{ loading ? 'Guardando...' : 'Confirmar Apuesta' }}
-        </button>
+        <button type="button" class="btn-cancel" (click)="cancel.emit()">Cerrar</button>
       </div>
-    </form>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="pf-scores">
+          <div class="score-input">
+            <label>{{ partido.equipo_local }}</label>
+            <input formControlName="goles_local" type="number" min="0" max="20" [disabled]="cerrado()" />
+          </div>
+          <div class="score-separator">–</div>
+          <div class="score-input">
+            <label>{{ partido.equipo_visitante }}</label>
+            <input formControlName="goles_visitante" type="number" min="0" max="20" [disabled]="cerrado()" />
+          </div>
+        </div>
+
+        <div class="pf-tendency">
+          Tendencia apostada: <strong>{{ tendenciaPreview }}</strong>
+        </div>
+
+        @if (error) { <div class="error-msg">{{ error }}</div> }
+
+        <div class="pf-warning">
+          ⚠ Las apuestas son definitivas y no se pueden cambiar
+        </div>
+
+        <div class="pf-actions">
+          <button type="button" class="btn-cancel" (click)="cancel.emit()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="loading || cerrado()">
+            {{ loading ? 'Guardando...' : 'Confirmar Apuesta' }}
+          </button>
+        </div>
+      </form>
+    }
   </div>
 </div>

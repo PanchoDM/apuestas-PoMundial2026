@@ -12,8 +12,9 @@ import { PrediccionFormComponent } from '../prediccion-form/prediccion-form';
 import { StreakBannerComponent } from '../streak-banner/streak-banner';
 import { NavbarComponent } from '../navbar/navbar';
 import { FlagPipe } from '../../pipes/flag.pipe';
+import { msHastaCierre, apuestasVencidas } from '../../utils/apuestas.util';
 
-type FiltroChip = 'todos' | 'abiertas' | 'mis-apuestas' | 'en-vivo';
+type FiltroChip = 'todos' | 'abiertas' | 'mis-apuestas' | 'en-vivo' | 'mas-cercanos';
 
 @Component({
   selector: 'app-dashboard',
@@ -79,11 +80,23 @@ export class DashboardComponent implements OnInit {
 
     // Chips de filtro rápido
     const chip = this.filtroChip();
-    if (chip === 'abiertas')    list = list.filter(p => p.apuestas_abiertas && p.estado !== 'finalizado');
-    if (chip === 'en-vivo')     list = list.filter(p => p.estado === 'medio_tiempo');
+    if (chip === 'abiertas')      list = list.filter(p => p.apuestas_abiertas && p.estado !== 'finalizado');
+    // 'en-vivo': únicamente partidos jugándose en este preciso instante.
+    // El estado 'medio_tiempo' es el que la BD usa para "partido en curso"
+    // (ver partidosController.marcadorEnVivo) — excluye explícitamente
+    // pendientes y finalizados.
+    if (chip === 'en-vivo')       list = list.filter(p => p.estado === 'medio_tiempo');
+    if (chip === 'mas-cercanos')  list = list.filter(p => p.estado === 'pendiente');
     if (chip === 'mis-apuestas') {
       const ids = new Set(this.predicciones().map(pr => pr.partido_id));
       list = list.filter(p => ids.has(p.id));
+    }
+
+    // 'mas-cercanos' se muestra como una sola lista cronológica (más próximo
+    // primero), sin agrupar por grupo/ronda — el orden es el requisito clave.
+    if (chip === 'mas-cercanos') {
+      const ordenados = [...list].sort((a, b) => Date.parse(a.fecha_partido) - Date.parse(b.fecha_partido));
+      return ordenados.length ? [{ titulo: 'MÁS CERCANOS', partidos: ordenados }] : [];
     }
 
     const grupoMap = new Map<string, Partido[]>();
@@ -229,16 +242,13 @@ export class DashboardComponent implements OnInit {
   getStats(id: number): PartidoStats | undefined { return this.stats().get(id); }
 
   // ── Cuenta regresiva al cierre de apuestas ────────────────────────────────
-  // Las fechas en BD están en hora Lima (UTC-5) guardadas como naive; el JSON
-  // las trae como ISO interpretadas en UTC, por eso comparamos contra
-  // "ahora en Lima" (Date.now() - 5h). El cron cierra al minuto 45.
+  // Las apuestas cierran 5 minutos después de la hora oficial de inicio del
+  // partido (ver utils/apuestas.util.ts). this.nowTick() se lee aquí solo
+  // para mantener el método reactivo al tick de 1s del componente.
   countdown(partido: Partido): string | null {
-    if (!partido.apuestas_abiertas || partido.estado !== 'pendiente') return null;
-    const inicio = Date.parse(partido.fecha_partido);
-    if (isNaN(inicio)) return null;
-    const cierre  = inicio + 45 * 60_000;
-    const nowLima = this.nowTick() - 5 * 3600_000;
-    const diff = cierre - nowLima;
+    if (this.apuestasCerradas(partido)) return null;
+    this.nowTick();
+    const diff = msHastaCierre(partido.fecha_partido);
     if (diff <= 0) return null;
 
     const d = Math.floor(diff / 86_400_000);
@@ -251,16 +261,23 @@ export class DashboardComponent implements OnInit {
   }
 
   countdownUrgente(partido: Partido): boolean {
-    if (!partido.apuestas_abiertas) return false;
-    const inicio = Date.parse(partido.fecha_partido);
-    const nowLima = this.nowTick() - 5 * 3600_000;
-    return inicio + 45 * 60_000 - nowLima < 3_600_000; // menos de 1 hora
+    if (this.apuestasCerradas(partido)) return false;
+    this.nowTick();
+    return msHastaCierre(partido.fecha_partido) < 2 * 60_000; // menos de 2 minutos
+  }
+
+  // Bloqueo de tarjeta/inputs/botón: cerrado por flag de BD, por estado, o
+  // porque ya pasaron los 5 minutos de margen desde el inicio del partido.
+  apuestasCerradas(partido: Partido): boolean {
+    this.nowTick();
+    if (!partido.apuestas_abiertas || partido.estado !== 'pendiente') return true;
+    return apuestasVencidas(partido.fecha_partido);
   }
 
   setFiltro(chip: FiltroChip) { this.filtroChip.set(chip); }
 
   openBet(partido: Partido) {
-    if (!partido.apuestas_abiertas) return;
+    if (this.apuestasCerradas(partido)) return;
     this.selectedPartido.set(partido);
   }
 
