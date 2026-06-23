@@ -9,12 +9,10 @@
 
 <div class="admin-layout">
 
-  <!-- ── Overlay móvil ──────────────────────────────────────────────── -->
   @if (sidebarOpen()) {
     <div class="sidebar-overlay" (click)="closeSidebar()"></div>
   }
 
-  <!-- ── Sidebar dinámico ───────────────────────────────────────────── -->
   <nav class="admin-sidebar" [class.is-open]="sidebarOpen()">
     <header class="sidebar-header">
       <span class="sidebar-label">RONDAS</span>
@@ -22,7 +20,6 @@
     </header>
 
     <ul class="sidebar-nav">
-      <!-- Todos -->
       <li>
         <button class="sidebar-item"
                 [class.active]="!selectedGrupo() && !selectedFase()"
@@ -31,7 +28,6 @@
         </button>
       </li>
 
-      <!-- Fase de Grupos: 12 grupos generados dinámicamente -->
       <li class="sidebar-nav__section">FASE DE GRUPOS</li>
       @for (g of grupos; track g) {
         <li>
@@ -43,7 +39,6 @@
         </li>
       }
 
-      <!-- Fase de Eliminación directa -->
       <li class="sidebar-nav__section">ELIMINACIÓN DIRECTA</li>
       @for (fase of fasesEliminacion; track fase.key) {
         <li>
@@ -57,7 +52,6 @@
     </ul>
   </nav>
 
-  <!-- ── Contenido principal ────────────────────────────────────────── -->
   <main class="admin-page">
 
     <header class="admin-header">
@@ -69,7 +63,6 @@
       ⚠ Como administrador no puedes realizar predicciones. Tu rol es gestionar la plataforma.
     </p>
 
-    <!-- ── v2.1: Resumen del torneo ─────────────────────────────────────── -->
     @if (resumen(); as r) {
       <section class="resumen-grid">
         <div class="resumen-card"><span class="resumen-value">{{ r.usuarios }}</span><span class="resumen-label">Usuarios</span></div>
@@ -81,7 +74,6 @@
       </section>
     }
 
-    <!-- ── v2.1: Distribución de apuestas (mini-modal) ──────────────────── -->
     @if (statsDe(); as sp) {
       <div class="stats-overlay" (click)="cerrarStats()">
         <div class="stats-modal" (click)="$event.stopPropagation()">
@@ -119,7 +111,6 @@
       </div>
     }
 
-    <!-- ── Agregar partido ───────────────────────────────────────────── -->
     <section class="admin-section">
       <header class="section-header">
         <h2>Agregar Partido</h2>
@@ -131,7 +122,6 @@
       @if (showForm()) {
         <form class="partido-form" [formGroup]="form" (ngSubmit)="submitPartido()">
 
-          <!-- Fila 1: equipos -->
           <div class="partido-form__row">
             <div class="form-group">
               <label>Equipo Local</label>
@@ -144,15 +134,19 @@
             </div>
           </div>
 
-          <!-- Fila 2: fecha, grupo, jornada o ronda eliminatoria -->
           <div class="partido-form__row partido-form__row--meta">
             
-            <!-- Tipo de Fase -->
-            <div class="form-group form-group--radio">
+            <div class="form-group">
               <label>Tipo de Fase</label>
-              <div class="radio-group" style="display: flex; gap: 15px; align-items: center; height: 100%; margin-top: 8px;">
-                <label style="cursor: pointer;"><input type="radio" formControlName="tipo_fase" value="grupo"> Grupos</label>
-                <label style="cursor: pointer;"><input type="radio" formControlName="tipo_fase" value="eliminatoria"> Eliminatoria</label>
+              <div class="radio-group" style="display: flex; gap: 15px; margin-top: 5px;">
+                <label style="display: flex; align-items: center; gap: 5px;">
+                  <input type="radio" formControlName="tipo_fase" value="grupo">
+                  Grupos
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px;">
+                  <input type="radio" formControlName="tipo_fase" value="eliminatoria">
+                  Eliminatoria
+                </label>
               </div>
             </div>
 
@@ -161,7 +155,6 @@
               <input formControlName="fecha_partido" type="datetime-local" />
             </div>
 
-            <!-- Campos para Fase de Grupos -->
             @if (form.value.tipo_fase === 'grupo' || !form.value.tipo_fase) {
               <div class="form-group">
                 <label>Grupo</label>
@@ -196,7 +189,6 @@
             }
           </div>
 
-          <!-- Preview de banderas -->
           @if (form.value.equipo_local || form.value.equipo_visitante) {
             <div class="partido-preview">
               <span class="preview-team">
@@ -223,7 +215,6 @@
       }
     </section>
 
-    <!-- ── Control de partidos ──────────────────────────────────────── -->
     <section class="admin-section">
       <header class="section-header">
         <h2>
@@ -377,7 +368,6 @@
       }
     </section>
 
-    <!-- ── Visibilidad de Fases ────────────────────────────────────────── -->
     <section class="admin-section">
       <header class="section-header">
         <h2>Visibilidad de Fases</h2>
@@ -385,7 +375,6 @@
       </header>
 
       <div class="vis-fase-layout">
-        <!-- Fase de Grupos -->
         <div class="vis-fase-group">
           <p class="vis-fase-label">FASE DE GRUPOS</p>
           <div class="vis-fase-toggles">
@@ -406,7 +395,6 @@
           </div>
         </div>
 
-        <!-- Eliminación Directa -->
         <div class="vis-fase-group">
           <p class="vis-fase-label">ELIMINACIÓN DIRECTA</p>
           <div class="vis-fase-toggles vis-fase-toggles--wide">
@@ -431,7 +419,7 @@
 
   </main>
 
-  <!-- ── Botón flotante — solo móvil ────────────────────────────────── -->
   <button class="btn-sidebar-toggle" (click)="toggleSidebar()">☰ Filtrar</button>
 
 </div>
+
