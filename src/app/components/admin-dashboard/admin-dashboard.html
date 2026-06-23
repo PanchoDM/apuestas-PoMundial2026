@@ -162,7 +162,7 @@
             </div>
 
             <!-- Campos para Fase de Grupos -->
-            @if (form.get('tipo_fase')?.value === 'grupo') {
+            @if (form.value.tipo_fase === 'grupo' || !form.value.tipo_fase) {
               <div class="form-group">
                 <label>Grupo</label>
                 <select formControlName="grupo">
@@ -183,8 +183,7 @@
               </div>
             }
 
-            <!-- Campo para Fase Eliminatoria -->
-            @if (form.get('tipo_fase')?.value === 'eliminatoria') {
+            @if (form.value.tipo_fase === 'eliminatoria') {
               <div class="form-group form-group--wide">
                 <label>Fase / Ronda</label>
                 <select formControlName="ronda">
