@@ -144,30 +144,57 @@
             </div>
           </div>
 
-          <!-- Fila 2: fecha, grupo, jornada -->
+          <!-- Fila 2: fecha, grupo, jornada o ronda eliminatoria -->
           <div class="partido-form__row partido-form__row--meta">
+            
+            <!-- Tipo de Fase -->
+            <div class="form-group form-group--radio">
+              <label>Tipo de Fase</label>
+              <div class="radio-group" style="display: flex; gap: 15px; align-items: center; height: 100%; margin-top: 8px;">
+                <label style="cursor: pointer;"><input type="radio" formControlName="tipo_fase" value="grupo"> Grupos</label>
+                <label style="cursor: pointer;"><input type="radio" formControlName="tipo_fase" value="eliminatoria"> Eliminatoria</label>
+              </div>
+            </div>
+
             <div class="form-group">
               <label>Fecha y Hora</label>
               <input formControlName="fecha_partido" type="datetime-local" />
             </div>
-            <div class="form-group">
-              <label>Grupo</label>
-              <select formControlName="grupo">
-                <option value="">Seleccionar...</option>
-                @for (g of grupos; track g) {
-                  <option [value]="g">Grupo {{ g }}</option>
-                }
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Jornada</label>
-              <select formControlName="jornada">
-                <option value="">Seleccionar...</option>
-                @for (j of jornadas; track j) {
-                  <option [value]="j">Jornada {{ j }}</option>
-                }
-              </select>
-            </div>
+
+            <!-- Campos para Fase de Grupos -->
+            @if (form.get('tipo_fase')?.value === 'grupo') {
+              <div class="form-group">
+                <label>Grupo</label>
+                <select formControlName="grupo">
+                  <option value="">Seleccionar...</option>
+                  @for (g of grupos; track g) {
+                    <option [value]="g">Grupo {{ g }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Jornada</label>
+                <select formControlName="jornada">
+                  <option value="">Seleccionar...</option>
+                  @for (j of jornadas; track j) {
+                    <option [value]="j">Jornada {{ j }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <!-- Campo para Fase Eliminatoria -->
+            @if (form.get('tipo_fase')?.value === 'eliminatoria') {
+              <div class="form-group form-group--wide">
+                <label>Fase / Ronda</label>
+                <select formControlName="ronda">
+                  <option value="">Seleccionar fase...</option>
+                  @for (f of fasesEliminacion; track f.key) {
+                    <option [value]="f.key">{{ f.label }}</option>
+                  }
+                </select>
+              </div>
+            }
           </div>
 
           <!-- Preview de banderas -->
