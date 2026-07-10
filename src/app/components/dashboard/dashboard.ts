@@ -57,14 +57,14 @@ export class DashboardComponent implements OnInit {
   user = this.auth.currentUser;
 
   private readonly GRUPOS_ORDER = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-  private readonly RONDA_ORDER  = ['16avos','octavos','cuartos','semis','tercero','final'];
+  private readonly RONDA_ORDER  = ['16avos','octavos','cuartos','semifinal','tercero','final'];
   private readonly RONDA_LABELS: Record<string, string> = {
-    '16avos':  'DIECISEISAVOS DE FINAL',
-    'octavos': 'OCTAVOS DE FINAL',
-    'cuartos': 'CUARTOS DE FINAL',
-    'semis':   'SEMIFINAL',
-    'tercero': 'TERCER LUGAR',
-    'final':   'FINAL',
+    '16avos':    'DIECISEISAVOS DE FINAL',
+    'octavos':   'OCTAVOS DE FINAL',
+    'cuartos':   'CUARTOS DE FINAL',
+    'semifinal': 'SEMIFINAL',
+    'tercero':   'TERCER LUGAR',
+    'final':     'FINAL',
   };
 
   partidosAgrupados = computed(() => {

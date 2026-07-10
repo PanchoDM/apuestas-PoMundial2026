@@ -50,7 +50,7 @@ export class AdminDashboardComponent implements OnInit {
     { key: '16avos',  label: 'Dieciseisavos de Final' },
     { key: 'octavos', label: 'Octavos de Final' },
     { key: 'cuartos', label: 'Cuartos de Final' },
-    { key: 'semis',   label: 'Semifinal' },
+    { key: 'semifinal', label: 'Semifinal' },
     { key: 'tercero', label: 'Tercer Lugar' },
     { key: 'final',   label: 'Final' },
   ];
