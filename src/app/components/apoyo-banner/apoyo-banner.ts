@@ -12,4 +12,5 @@ export class ApoyoBannerComponent {
   @Output() close = new EventEmitter<void>();
 
   readonly yapeNombre = 'Carlos Franchesco De La Cruz Merino';
+  readonly yapeNumero = '931 292 817';
 }
