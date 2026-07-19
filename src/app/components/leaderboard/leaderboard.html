@@ -1,5 +1,9 @@
 <app-navbar />
 
+@if (showApoyoBanner()) {
+  <app-apoyo-banner (close)="closeApoyoBanner()" />
+}
+
 <main class="lb-page">
   <!-- Hero -->
   <section class="lb-hero">

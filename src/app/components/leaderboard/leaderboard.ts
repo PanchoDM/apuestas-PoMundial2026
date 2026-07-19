@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../navbar/navbar';
+import { ApoyoBannerComponent } from '../apoyo-banner/apoyo-banner';
 import { LeaderboardService, LeaderboardEntry } from '../../services/leaderboard.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-leaderboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, ApoyoBannerComponent],
   templateUrl: './leaderboard.html',
   styleUrl: './leaderboard.scss',
 })
@@ -17,6 +18,9 @@ export class LeaderboardComponent implements OnInit {
 
   entries  = signal<LeaderboardEntry[]>([]);
   loading  = signal(true);
+
+  // Se muestra cada vez que se entra a Posiciones (sin recordar en localStorage).
+  showApoyoBanner = signal(true);
 
   currentUser = this.auth.currentUser;
 
@@ -29,6 +33,10 @@ export class LeaderboardComponent implements OnInit {
       next: data => { this.entries.set(data); this.loading.set(false); },
       error: ()   => this.loading.set(false),
     });
+  }
+
+  closeApoyoBanner() {
+    this.showApoyoBanner.set(false);
   }
 
   getMedalEmoji(pos: number): string {
