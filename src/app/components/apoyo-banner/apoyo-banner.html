@@ -1,0 +1,18 @@
+<div class="apoyo-overlay" (click)="close.emit()">
+  <div class="apoyo-modal" (click)="$event.stopPropagation()">
+    <button class="apoyo-close-x" (click)="close.emit()" aria-label="Cerrar">✕</button>
+
+    <div class="apoyo-icon">🏆</div>
+    <h2 class="apoyo-message">¡Gracias por jugar y apostar con nosotros!</h2>
+    <p class="apoyo-subtitle">
+      Tu apoyo puede ayudarnos a crecer. Puedes yapear a este número o a este QR:
+    </p>
+
+    <img class="apoyo-qr" src="/assets/yape.jpeg" alt="Código QR de Yape" />
+    <p class="apoyo-numero">{{ yapeNombre }}</p>
+
+    <button class="apoyo-close" (click)="close.emit()">Continuar</button>
+
+    <footer class="apoyo-footer">Muchas gracias por su apoyo</footer>
+  </div>
+</div>

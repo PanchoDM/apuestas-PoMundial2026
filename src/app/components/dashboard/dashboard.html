@@ -4,6 +4,10 @@
   <app-streak-banner [streak]="streak()!" (close)="streak.set(null)" />
 }
 
+@if (showApoyoBanner()) {
+  <app-apoyo-banner (close)="closeApoyoBanner()" />
+}
+
 @if (selectedPartido()) {
   <app-prediccion-form [partido]="selectedPartido()!" (saved)="onSaved()" (cancel)="selectedPartido.set(null)" />
 }

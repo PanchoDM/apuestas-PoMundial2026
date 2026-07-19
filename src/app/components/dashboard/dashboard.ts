@@ -10,16 +10,19 @@ import { NotificationsService } from '../../services/notifications.service';
 import { Partido, PartidoStats, Prediccion, Streak } from '../../models/models';
 import { PrediccionFormComponent } from '../prediccion-form/prediccion-form';
 import { StreakBannerComponent } from '../streak-banner/streak-banner';
+import { ApoyoBannerComponent } from '../apoyo-banner/apoyo-banner';
 import { NavbarComponent } from '../navbar/navbar';
 import { FlagPipe } from '../../pipes/flag.pipe';
 import { msHastaCierre, apuestasVencidas } from '../../utils/apuestas.util';
 
 type FiltroChip = 'todos' | 'abiertas' | 'mis-apuestas' | 'en-vivo' | 'mas-cercanos';
 
+const APOYO_BANNER_KEY = 'apoyo_banner_visto';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, PrediccionFormComponent, StreakBannerComponent, NavbarComponent, FlagPipe],
+  imports: [CommonModule, FormsModule, DatePipe, PrediccionFormComponent, StreakBannerComponent, ApoyoBannerComponent, NavbarComponent, FlagPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -29,6 +32,7 @@ export class DashboardComponent implements OnInit {
   streak          = signal<Streak | null>(null);
   selectedPartido = signal<Partido | null>(null);
   loading         = signal(true);
+  showApoyoBanner = signal(!localStorage.getItem(APOYO_BANNER_KEY));
 
   // ── Marcadores en tiempo real ─────────────────────────────────────────────
   // ids de partidos cuyo marcador acaba de cambiar → dispara animación de gol
@@ -284,6 +288,11 @@ export class DashboardComponent implements OnInit {
   onSaved() {
     this.selectedPartido.set(null);
     this.loadData(true);
+  }
+
+  closeApoyoBanner() {
+    localStorage.setItem(APOYO_BANNER_KEY, '1');
+    this.showApoyoBanner.set(false);
   }
 
   sectionId(titulo: string): string {
